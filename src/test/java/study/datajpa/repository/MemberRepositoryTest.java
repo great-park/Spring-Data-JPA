@@ -155,4 +155,16 @@ class MemberRepositoryTest {
         }
     }
 
+    @Test
+    public void queryHint() throws Exception {
+        //given
+        memberRepository.save(new Member("member1", 10));
+        em.flush();
+        em.clear();
+        //when
+        Member member = memberRepository.findReadOnlyByUsername("member1");
+        member.setUsername("member2");
+        //원래는 변경 감지 -> DB로 업데이트 쿼리 실시
+        em.flush(); //Update Query 실행X (read only)
+    }
 }
