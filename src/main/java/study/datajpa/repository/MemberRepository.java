@@ -1,6 +1,8 @@
 package study.datajpa.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import study.datajpa.entity.Member;
 
 import java.util.List;
@@ -17,23 +19,17 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     /**
      * 스프링 데이터 JPA는 메소드 이름을 분석해서 JPQL을 생성하고 실행
      * 쿼리 메소드 필터 조건
-     * 스프링 데이터 JPA 공식 문서 참고: (https://docs.spring.io/spring-data/jpa/docs/current/
-     * reference/html/#jpa.query-methods.query-creation)
-     * 스프링 데이터 JPA가 제공하는 쿼리 메소드 기능
-     * 조회: find…By ,read…By ,query…By get…By,
-     * https://docs.spring.io/spring-data/jpa/docs/current/reference/html/
-     * #repositories.query-methods.query-creation
-     * 예:) findHelloBy 처럼 ...에 식별하기 위한 내용(설명)이 들어가도 된다.
-     * COUNT: count…By 반환타입 long
-     * EXISTS: exists…By 반환타입 boolean
-     * 삭제: delete…By, remove…By 반환타입 long
-     * DISTINCT: findDistinct, findMemberDistinctBy
-     * LIMIT: findFirst3, findFirst, findTop, findTop3
-     * https://docs.spring.io/spring-data/jpa/docs/current/reference/html/
-     * #repositories.limit-query-result
+     * 스프링 데이터 JPA 공식 문서 참고: (https://docs.spring.io/spring-data/jpa/docs/current/reference/html/#jpa.query-methods.query-creation)
      * > 참고: 이 기능은 엔티티의 필드명이 변경되면 인터페이스에 정의한 메서드 이름도 꼭 함께 변경해야 한다.
      * 그렇지 않으면 애플리케이션을 시작하는 시점에 오류가 발생한다.
      * > 이렇게 애플리케이션 로딩 시점에 오류를 인지할 수 있는 것이 스프링 데이터 JPA의 매우 큰 장점이다.
      */
     List<Member> findByUsernameAndAgeGreaterThan(String username, int age);
+
+    /**
+     * 실행할 메서드에 정적 쿼리를 직접 작성하므로 이름 없는 Named 쿼리라 할 수 있음
+     * JPA Named 쿼리처럼 애플리케이션 실행 시점에 문법 오류를 발견할 수 있음(매우 큰 장점!)
+     */
+    @Query("select m from Member m where m.username = :username and m.age = :age")
+    List<Member> findUser(@Param("username") String username, @Param("age") int age);
 }
