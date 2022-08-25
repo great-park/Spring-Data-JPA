@@ -10,6 +10,8 @@ import org.springframework.transaction.annotation.Transactional;
 import study.datajpa.dto.MemberDto;
 import study.datajpa.entity.Member;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -20,6 +22,9 @@ import static org.junit.jupiter.api.Assertions.*;
 class MemberRepositoryTest {
 
     @Autowired MemberRepository memberRepository;
+    @Autowired TeamRepository teamRepository;
+    @PersistenceContext
+    EntityManager em;
 
     @Test
     public void testMember() {
@@ -105,6 +110,27 @@ class MemberRepositoryTest {
         assertThat(page.getTotalPages()).isEqualTo(2); //전체 페이지 번호
         assertThat(page.isFirst()).isTrue(); //첫번째 항목인가?
         assertThat(page.hasNext()).isTrue(); //다음 페이지가 있는가?
+    }
+
+    @Test
+    public void bulkUpdate() throws Exception {
+        //given
+        memberRepository.save(new Member("member1", 10));
+        memberRepository.save(new Member("member2", 19));
+        memberRepository.save(new Member("member3", 20));
+        memberRepository.save(new Member("member4", 21));
+        memberRepository.save(new Member("member5", 40));
+        //when
+        int resultCount = memberRepository.bulkAgePlus(20);
+
+        /**
+         * 벌크연산은 영속성 컨텍스트를 무시하고 DB에 반영하기 때문에 맞춰줘야 한다.
+         * 아래와 같이 flush를 호출하거나, @Modifying 어노테이션에 clearAutomatically 옵션을 true로 둔다.
+         */
+//        em.flush();
+//        em.clear();
+        //then
+        assertThat(resultCount).isEqualTo(3);
     }
 
 
