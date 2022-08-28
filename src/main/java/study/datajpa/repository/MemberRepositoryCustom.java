@@ -1,4 +1,6 @@
 package study.datajpa.repository;
 
-public interface MemberRepositoryCustom {
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface MemberRepositoryCustom extends JpaRepository {
 }
